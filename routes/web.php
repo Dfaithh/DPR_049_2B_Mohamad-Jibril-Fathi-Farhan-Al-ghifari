@@ -15,7 +15,11 @@ Route::get('/admin', function () {
     }
     return view('admin');
 });
-Route::get('/admin/anggota', [AnggotaController::class, 'index'])->name('anggota.index');
+Route::get('/admin/anggota', [AnggotaController::class, 'index'])->name('admin.anggota.index');
+// Admin tambah anggota
+Route::get('/admin/anggota/tambah', [AnggotaController::class, 'create'])->name('anggota.create');
+Route::post('/admin/anggota/tambah', [AnggotaController::class, 'store'])->name('anggota.store');
+
 
 // public
 Route::get('/public/anggota', [AnggotaController::class, 'publicView'])->name('public.anggota.index');

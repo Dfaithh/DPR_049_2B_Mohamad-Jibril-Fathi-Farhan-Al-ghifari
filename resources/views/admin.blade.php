@@ -14,7 +14,7 @@
     <div class="collapse navbar-collapse">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link text-warning" href="/logout">Logout</a>
+          <a class="btn btn-danger" href="/logout">Logout</a>
         </li>
       </ul>
     </div>
