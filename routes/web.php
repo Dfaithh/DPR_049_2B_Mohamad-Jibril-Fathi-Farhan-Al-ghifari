@@ -8,6 +8,7 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/logout', [AuthController::class, 'logout']);
 
+// admin
 Route::get('/admin', function () {
     if (!session()->has('user') || session('user')->role !== 'Admin') {
         return redirect('/login');
@@ -16,6 +17,8 @@ Route::get('/admin', function () {
 });
 Route::get('/admin/anggota', [AnggotaController::class, 'index'])->name('anggota.index');
 
+// public
+Route::get('/public/anggota', [AnggotaController::class, 'publicView'])->name('public.anggota.index');
 Route::get('/public', function () {
     if (!session()->has('user') || session('user')->role !== 'Public') {
         return redirect('/login');

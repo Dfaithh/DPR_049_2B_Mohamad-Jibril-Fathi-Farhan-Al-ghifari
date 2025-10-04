@@ -8,10 +8,15 @@ use Illuminate\Support\Facades\DB;
 class AnggotaController extends Controller
 {
     public function index()
-    {
-        // ambil semua data dari tabel anggota
-        $anggota = DB::table('anggota')->get();
+{
+    $anggota = DB::table('anggota')->get();
+    return view('admin.list_anggota', compact('anggota'));
+}
 
-        return view('admin.list_anggota', compact('anggota'));
-    }
+public function publicView()
+{
+    $anggota = DB::table('anggota')->get();
+    return view('public.list_anggota', compact('anggota'));
+}
+
 }
