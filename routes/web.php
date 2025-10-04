@@ -1,12 +1,57 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']);
-Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+// Halaman login
+Route::get('/login', function () {
+    return view('login');
+})->name('login');
 
-// Landing page (hanya bisa diakses setelah login)
-Route::middleware('auth')->get('/landing', function () {
-    return view('landing');
+// Proses login
+Route::post('/login', function (Request $request) {
+    $username = $request->input('id');
+    $password = $request->input('password');
+
+    $user = DB::table('pengguna')->where('username', $username)->first();
+
+    if ($user && Hash::check($password, $user->password)) {
+        session(['user' => $user]);
+
+        // arahkan sesuai role
+        if ($user->role === 'Admin') {
+            return redirect('/admin');
+        } else {
+            return redirect('/public');
+        }
+
+    } else {
+        return back()->with('error', 'Username atau Password salah!');
+    }
+});
+
+// Halaman logout
+Route::get('/logout', function () {
+    session()->forget('user');
+    return redirect('/login');
+});
+
+// Halaman admin
+Route::get('/admin', function () {
+    if (!session()->has('user') || session('user')->role !== 'Admin') {
+        return redirect('/login');
+    }
+
+    return view('admin');
+});
+
+// Halaman public (citizen)
+Route::get('/public', function () {
+    if (!session()->has('user') || session('user')->role !== 'Public') {
+        return redirect('/login');
+    }
+
+    return view('public');
 });
