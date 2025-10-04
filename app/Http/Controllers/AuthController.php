@@ -1,34 +1,48 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
-class AuthController extends Controller
+class AuthController 
 {
-    public function showLogin() {
-        return view('auth.login');
+
+    public function showLogin()
+    {
+        return view('login');
     }
 
     public function login(Request $request)
-{
-    $credentials = $request->only('email','password');
+    {
+        // Validasi input
+        $request->validate([
+            'id' => 'required',
+            'password' => 'required',
+        ]);
 
-    if (Auth::attempt($credentials)) {
-        $request->session()->regenerate();
-        return redirect('/landing');  // arahkan ke landing
+        $username = $request->input('id');
+        $password = $request->input('password');
+
+        $user = DB::table('pengguna')->where('username', $username)->first();
+
+        if ($user && Hash::check($password, $user->password)) {
+            session(['user' => $user]);
+
+            if ($user->role === 'Admin') {
+                return redirect('/admin');
+            } else {
+                return redirect('/public');
+            }
+        }
+
+        return back()->with('error', 'Username atau password salah!');
     }
 
-    return back()->withErrors([
-        'email' => 'Email atau password salah.',
-    ]);
-}
-
-
-    public function logout(Request $request) {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+    public function logout()
+    {
+        session()->forget('user');
         return redirect('/login');
     }
 }
